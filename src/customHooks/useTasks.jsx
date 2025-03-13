@@ -27,7 +27,7 @@ export default function useTasks() {
     // Funzione per aggiungere una task
     const addTask = async (task) => {
         try {
-            console.log("Sending task:", task) // Aggiungi questo log
+            // console.log("Sending task:", task) 
 
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/tasks`, task)
             if (response.data.success) {
@@ -42,15 +42,20 @@ export default function useTasks() {
         }
     }
 
-    //  // Funzione per rimuovere una task
-    //  const removeTask = async () => {
-    //     try{
-
-    //     }
-    //     catch (err){
-    //         console.error(err)
-    //     }
-    //  }
+    // Funzione per rimuovere una task
+    const removeTask = async (taskId) => {
+        try {
+            const response = await axios.delete(`${import.meta.env.VITE_API_URL}/tasks/${taskId}`)
+            if (response.data.success) {
+                setTasks(tasks.filter(task => task.id !== taskId))
+            } else {
+                throw new Error(response.data.message)
+            }
+        }
+        catch (err) {
+            console.error(err)
+        }
+    }
 
     //  // Funzione per modificare una task
     //  const updateTask = async () => {
@@ -62,5 +67,5 @@ export default function useTasks() {
     //     }
     //  }
 
-    return [fetchTasks, tasks, addTask]
+    return [fetchTasks, tasks, addTask, removeTask]
 }

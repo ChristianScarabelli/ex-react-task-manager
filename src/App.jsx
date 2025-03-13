@@ -6,6 +6,7 @@ import BlankLayout from "./layout/BlankLayout"
 import NotFound from "./pages/NotFound"
 import TaskList from "./pages/TaskList"
 import AddTask from "./pages/AddTask"
+import TaskDetail from './pages/TaskDetail.jsx'
 // Context
 import { GlobalProvider } from "./contexts/GlobalContext"
 
@@ -20,6 +21,7 @@ function App() {
             <Route path="/" element={<Navigate to="/tasks" replace />} />
             <Route path="/tasks" element={<TaskList />} />
             <Route path="/add-tasks" element={<AddTask />} />
+            <Route path="/task/:id" element={<TaskDetail />} />
           </Route>
           {/* BlankLayout per pagina 404 */}
           <Route element={<BlankLayout />}>
