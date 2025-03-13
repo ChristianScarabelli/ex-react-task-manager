@@ -9,19 +9,19 @@ function TaskRow({ data }) {
             case 'To do':
                 return 'bg-red-500'
             case 'Doing':
-                return 'bg-yellow-300'
+                return 'bg-yellow-400'
             case 'Done':
-                return 'bg-green-300'
+                return 'bg-green-400'
             default:
                 return ''
         }
     }
 
     return (
-        <tr>
-            <td>{title}</td>
-            <td className={statusBgColor(status)}>{status}</td>
-            <td>{createdAt}</td>
+        <tr className="not-last:border-b border-blue-300 hover:bg-gray-100">
+            <td className="py-2 px-4">{title}</td>
+            <td className={`py-2 px-4 ${statusBgColor(status)} rounded-md`}>{status}</td>
+            <td className="py-2 px-4">{createdAt}</td>
         </tr>
     )
 }
