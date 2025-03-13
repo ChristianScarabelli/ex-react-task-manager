@@ -24,15 +24,23 @@ export default function useTasks() {
         fetchTasks()
     }, [])
 
-    //  // Funzione per aggiungere una task
-    //  const addTask = async () => {
-    //     try{
+    // Funzione per aggiungere una task
+    const addTask = async (task) => {
+        try {
+            console.log("Sending task:", task) // Aggiungi questo log
 
-    //     }
-    //     catch (err){
-    //         console.error(err)
-    //     }
-    //  }
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/tasks`, task)
+            if (response.data.success) {
+                setTasks([...tasks, response.data.task])
+            } else {
+                throw new Error(response.data.message)
+            }
+        }
+        catch (err) {
+            console.error(err)
+            throw err
+        }
+    }
 
     //  // Funzione per rimuovere una task
     //  const removeTask = async () => {
@@ -54,5 +62,5 @@ export default function useTasks() {
     //     }
     //  }
 
-    return [fetchTasks, tasks]
+    return [fetchTasks, tasks, addTask]
 }

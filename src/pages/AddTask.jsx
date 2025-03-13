@@ -1,14 +1,19 @@
 import { useMemo, useRef, useState } from "react"
+import useTasks from "../customHooks/useTasks";
+import { useNavigate } from "react-router-dom";
 
 const symbols = "!@#$%^&*()-_=+[]{}|;:'\\\",.<>?/`~";
 
 export default function AddTask() {
+    const navigate = useNavigate()
 
     const [taskTitle, setTaskTitle] = useState('')
     const [isFormValid, setIsFormValid] = useState(false)
 
     const taskDescriptionRef = useRef()
     const taskStatusRef = useRef()
+
+    const [fetchTasks, tasks, addTask] = useTasks()
 
     // Funzione di validazione per Title
     const isTitleValid = useMemo(() => {
@@ -20,21 +25,34 @@ export default function AddTask() {
 
 
     // Funzione per il submit del form
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
 
         // Se il titolo non è valido blocco il submit
         if (!isTitleValid) return
+
         setIsFormValid(true)
 
         const description = taskDescriptionRef.current.value
         const status = taskStatusRef.current.value
 
-        console.log({
-            taskTitle,
+        const newTask = {
+            title: taskTitle,
             description,
             status,
-        })
+        }
+        try {
+            await addTask(newTask)  // Aggiungo la nuova task
+            alert('New task added!')
+            // Reset del form
+            setTaskTitle('')
+            taskDescriptionRef.current.value = ''
+            taskStatusRef.current.value = 'To Do'
+            setIsFormValid(false)
+            navigate('/tasks')
+        } catch (error) {
+            alert(`Failed to add new task: ${error.message}`)
+        }
     }
 
     return (

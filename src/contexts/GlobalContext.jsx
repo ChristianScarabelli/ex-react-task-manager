@@ -7,7 +7,7 @@ export function GlobalProvider({ children }) {
     const [fetchTasks, tasks] = useTasks()
 
     return (
-        <GlobalContext.Provider value={{ tasks }}>
+        <GlobalContext.Provider value={{ tasks, fetchTasks }}>
             {children}
         </GlobalContext.Provider>
     )
