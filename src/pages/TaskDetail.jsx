@@ -1,21 +1,33 @@
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { useContext } from "react"
 import GlobalContext from '../contexts/GlobalContext.jsx'
 export default function TaskDetail() {
     const { id } = useParams()
-    const { tasks } = useContext(GlobalContext)
+    const { tasks, removeTask, fetchTasks } = useContext(GlobalContext)
+    const navigate = useNavigate()
 
-
+    // Id numerico della task corrente
     const parsedId = parseInt(id)
 
     // Recupero la task dal context con id corrispondente al path
     const task = tasks.find((task) => task.id === parsedId)
 
 
-    // Stampo in console l'eliminazione al click
-    const handleClick = () => {
-        console.log(`Task with id ${id} has been deleted`)
+    // Funzione per gestire il bottone di eliminazione
+    const handleClick = async (e) => {
+        e.preventDefault()
+        try {
+            await removeTask(parsedId)
+            await fetchTasks()
+            alert('Task deleted succesfully')
+            navigate('/tasks')
+        }
+        catch (err) {
+            alert(`Failed to delete task: ${error.message}`)
+        }
     }
+
+    if (!task) return
 
     return (
         <section className="container mx-auto p-4">
