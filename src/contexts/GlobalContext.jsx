@@ -4,10 +4,10 @@ import useTasks from "../customHooks/useTasks";
 const GlobalContext = createContext()
 export function GlobalProvider({ children }) {
 
-    const [fetchTasks, tasks, addTask, removeTask, updateTask, removeMultipleTasks] = useTasks()
+    const tasksData = useTasks()
 
     return (
-        <GlobalContext.Provider value={{ tasks, fetchTasks, addTask, removeTask, updateTask, removeMultipleTasks }}>
+        <GlobalContext.Provider value={{ ...tasksData }}>
             {children}
         </GlobalContext.Provider>
     )

@@ -1,10 +1,11 @@
-import { useMemo, useRef, useState } from "react"
-import useTasks from "../customHooks/useTasks";
+import { useContext, useMemo, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom";
+import GlobalContext from "../contexts/GlobalContext";
 
 const symbols = "!@#$%^&*()-_=+[]{}|;:'\\\",.<>?/`~";
 
 export default function AddTask() {
+    const { addTask } = useContext(GlobalContext)
     const navigate = useNavigate()
 
     const [taskTitle, setTaskTitle] = useState('')
@@ -12,8 +13,6 @@ export default function AddTask() {
 
     const taskDescriptionRef = useRef()
     const taskStatusRef = useRef()
-
-    const [fetchTasks, tasks, addTask] = useTasks()
 
     // Funzione di validazione per Title
     const isTitleValid = useMemo(() => {

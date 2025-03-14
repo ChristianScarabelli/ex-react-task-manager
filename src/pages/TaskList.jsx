@@ -22,8 +22,7 @@ function debounce(callback, delay) {
 }
 
 export default function TaskList() {
-
-    // Stato per le tasks
+    // Destrutturare le funzioni e gli stati necessari dal contesto
     const { tasks, fetchTasks, removeMultipleTasks } = useContext(GlobalContext)
     // Stato per criterio/colonna di ordinamento
     const [sortBy, setSortBy] = useState('createdAt')
@@ -50,6 +49,7 @@ export default function TaskList() {
 
     // Funzione per la logica di ordinamento e filtraggio
     const tasksSort = useMemo(() => {
+        if (!tasks) return []
 
         // Se non c'è la query, imposto stringa vuota
         const searchQuery = queryRef.current ? queryRef.current.value.trim().toLowerCase() : ''
@@ -91,7 +91,6 @@ export default function TaskList() {
             }
         })
     }
-    // console.log('Task selezionate', selectedTaskIds)
 
     // Funzione di gestione dell'eliminazione multipla
     const handleMultipleTasksDelete = async (e) => {
@@ -104,7 +103,6 @@ export default function TaskList() {
         catch (err) {
             alert(`Failed to remove all tasks: ${err.message}`)
         }
-
     }
 
     return (

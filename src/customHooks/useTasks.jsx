@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs"
 
-
 export default function useTasks() {
 
     // Stato per le tasks
@@ -24,8 +23,7 @@ export default function useTasks() {
         }
     }
 
-
-    // effect per il fecth delle tasks al primo render
+    // effect per il fetch delle tasks al primo render
     useEffect(() => {
         fetchTasks()
     }, [])
@@ -33,11 +31,14 @@ export default function useTasks() {
     // Funzione per aggiungere una task
     const addTask = async (task) => {
         try {
-            // console.log("Sending task:", task) 
-
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/tasks`, task)
             if (response.data.success) {
-                setTasks([...tasks, response.data.task])
+                const newTask = {
+                    ...response.data.task,
+                    createdAt: response.data.task.createdAt,
+                    createdAtFormatted: dayjs(response.data.task.createdAt).format('DD/MM/YYYY')
+                }
+                setTasks([...tasks, newTask])
             } else {
                 throw new Error(response.data.message)
             }
@@ -68,7 +69,11 @@ export default function useTasks() {
         try {
             const response = await axios.put(`${import.meta.env.VITE_API_URL}/tasks/${taskId}`, updatedTask)
             if (response.data.success) {
-                const updatedTasks = tasks.map(task => task.id === taskId ? response.data.task : task)
+                const updatedTasks = tasks.map(task => task.id === taskId ? {
+                    ...response.data.task,
+                    createdAt: response.data.task.createdAt,
+                    createdAtFormatted: dayjs(response.data.task.createdAt).format('DD/MM/YYYY')
+                } : task)
                 setTasks(updatedTasks)
             }
         }
@@ -80,19 +85,26 @@ export default function useTasks() {
     // Funzione per rimozione multipla delle task
     const removeMultipleTasks = async (taskIds) => {
         try {
-            const results = await Promise.allSettled(
-                taskIds.map(taskId => axios.delete(`${import.meta.env.VITE_API_URL}/tasks/${taskId}`))
-            )
+            const results = await Promise.allSettled(taskIds.map(taskId => axios.delete(`${import.meta.env.VITE_API_URL}/tasks/${taskId}`)))
+            const failedIds = results
+                .filter(result => result.status === 'rejected')
+                .map((_, index) => taskIds[index])
 
-            // Filtra solo le task eliminate con successo
-            const successfulIds = taskIds.filter((_, index) => results[index].status === 'fulfilled')
+            if (failedIds.length > 0) {
+                throw new Error(`Failed to delete tasks with IDs: ${failedIds.join(', ')}`)
+            }
+
+            const successfulIds = results
+                .filter(result => result.status === 'fulfilled')
+                .map((_, index) => taskIds[index])
 
             setTasks(tasks.filter(task => !successfulIds.includes(task.id)))
-        } catch (err) {
-            console.error("Error deleting tasks:", err)
+        }
+        catch (err) {
+            console.error(err)
             throw err
         }
     }
 
-    return [fetchTasks, tasks, addTask, removeTask, updateTask, removeMultipleTasks]
+    return { tasks, fetchTasks, addTask, removeTask, updateTask, removeMultipleTasks }
 }
