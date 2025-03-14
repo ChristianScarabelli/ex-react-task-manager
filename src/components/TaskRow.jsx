@@ -1,6 +1,6 @@
 import { memo } from "react"
 import { Link } from "react-router-dom"
-function TaskRow({ data }) {
+function TaskRow({ data, checked, onToggle }) {
 
     const { title, status, createdAtFormatted, id } = data
 
@@ -18,10 +18,14 @@ function TaskRow({ data }) {
         }
     }
 
+
     return (
         <tr className="not-last:border-b border-blue-300 hover:bg-gray-100">
             <td className="py-2 px-4 hover:underline hover:text-blue-400">
-                <Link to={`/task/${id}`}>{title}</Link>
+                <div className="flex gap-5 items-center">
+                    <input type="checkbox" checked={checked} onChange={() => onToggle(id)} />
+                    <Link to={`/task/${id}`}>{title}</Link>
+                </div>
             </td>
             <td className={`py-2 px-4 ${statusBgColor(status)} rounded-md`}>{status}</td>
             <td className="py-2 px-4">{createdAtFormatted}</td>

@@ -24,13 +24,15 @@ function debounce(callback, delay) {
 export default function TaskList() {
 
     // Stato per le tasks
-    const { tasks, fetchTasks } = useContext(GlobalContext)
+    const { tasks, fetchTasks, removeMultipleTasks } = useContext(GlobalContext)
     // Stato per criterio/colonna di ordinamento
     const [sortBy, setSortBy] = useState('createdAt')
     // Stato per la direzione di ordinamento
     const [sortOrder, setSortOrder] = useState(1)
     // Riferimento per la ricerca
     const queryRef = useRef()
+    // Stato per memorizzare le task selezionate
+    const [selectedTaskIds, setSelectedTaskIds] = useState([])
 
     useEffect(() => {
         fetchTasks()
@@ -79,6 +81,32 @@ export default function TaskList() {
         fetchTasks()
     }, 300), [])
 
+    // Funzione per la selezione di task
+    const toggleSelection = (taskId) => {
+        setSelectedTaskIds(prev => {
+            if (prev.includes(taskId)) {
+                return prev.filter(id => id !== taskId)
+            } else {
+                return [...prev, taskId]
+            }
+        })
+    }
+    // console.log('Task selezionate', selectedTaskIds)
+
+    // Funzione di gestione dell'eliminazione multipla
+    const handleMultipleTasksDelete = async (e) => {
+        e.preventDefault()
+        try {
+            await removeMultipleTasks(selectedTaskIds)
+            alert('All tasks deleted successfully')
+            setSelectedTaskIds([])
+        }
+        catch (err) {
+            alert(`Failed to remove all tasks: ${err.message}`)
+        }
+
+    }
+
     return (
         <section className="container mx-auto p-4">
             <div className='flex justify-between items-center mb-5'>
@@ -92,7 +120,7 @@ export default function TaskList() {
                 />
             </div>
             <div className="overflow-x-auto mt-10">
-                <table className="min-w-full bg-gray-200 shadow-md rounded-lg overflow-hidden text-gray-800 mb-10 ">
+                <table className="min-w-full bg-gray-200 shadow-md rounded-lg overflow-hidden text-gray-800 mb-5">
                     <thead className="bg-gray-800 text-gray-300 ">
                         <tr>
                             <th onClick={() => handleSort('title')} className="py-2 px-4 text-left cursor-pointer hover:bg-gray-700">
@@ -118,11 +146,20 @@ export default function TaskList() {
                     <tbody>
                         {tasksSort &&
                             tasksSort.map((task) => {
-                                return <TaskRow key={task.id} data={task} />
+                                return <TaskRow
+                                    key={task.id}
+                                    data={task}
+                                    checked={selectedTaskIds.includes(task.id)}
+                                    onToggle={toggleSelection} />
                             })
                         }
                     </tbody>
                 </table>
+                {selectedTaskIds.length > 0 &&
+                    <div>
+                        <button onClick={handleMultipleTasksDelete} className="bg-red-500 text-gray-100 hover:bg-red-600 cursor-pointer px-4 py-2 rounded-lg">Delete all</button>
+                    </div>
+                }
             </div>
         </section>
     )

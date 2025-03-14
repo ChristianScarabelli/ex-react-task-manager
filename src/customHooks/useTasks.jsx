@@ -77,5 +77,22 @@ export default function useTasks() {
         }
     }
 
-    return [fetchTasks, tasks, addTask, removeTask, updateTask]
+    // Funzione per rimozione multipla delle task
+    const removeMultipleTasks = async (taskIds) => {
+        try {
+            const results = await Promise.allSettled(
+                taskIds.map(taskId => axios.delete(`${import.meta.env.VITE_API_URL}/tasks/${taskId}`))
+            )
+
+            // Filtra solo le task eliminate con successo
+            const successfulIds = taskIds.filter((_, index) => results[index].status === 'fulfilled')
+
+            setTasks(tasks.filter(task => !successfulIds.includes(task.id)))
+        } catch (err) {
+            console.error("Error deleting tasks:", err)
+            throw err
+        }
+    }
+
+    return [fetchTasks, tasks, addTask, removeTask, updateTask, removeMultipleTasks]
 }
