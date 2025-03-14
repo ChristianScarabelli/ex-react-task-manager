@@ -57,15 +57,19 @@ export default function useTasks() {
         }
     }
 
-    //  // Funzione per modificare una task
-    //  const updateTask = async () => {
-    //     try{
+    // Funzione per modificare una task
+    const updateTask = async (taskId, updatedTask) => {
+        try {
+            const response = await axios.put(`${import.meta.env.VITE_API_URL}/tasks/${taskId}`, updatedTask)
+            if (response.data.success) {
+                const updatedTasks = tasks.map(task => task.id === taskId ? response.data.task : task)
+                setTasks(updatedTasks)
+            }
+        }
+        catch (err) {
+            console.error(err)
+        }
+    }
 
-    //     }
-    //     catch (err){
-    //         console.error(err)
-    //     }
-    //  }
-
-    return [fetchTasks, tasks, addTask, removeTask]
+    return [fetchTasks, tasks, addTask, removeTask, updateTask]
 }
