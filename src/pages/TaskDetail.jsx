@@ -3,6 +3,7 @@ import { useState, useContext } from "react"
 import GlobalContext from '../contexts/GlobalContext.jsx'
 import Modal from "../components/Modal.jsx"
 import EditTaskModal from "../components/EditTaskModal.jsx"
+
 export default function TaskDetail() {
     const { id } = useParams()
     const { tasks, removeTask, fetchTasks, updateTask } = useContext(GlobalContext)

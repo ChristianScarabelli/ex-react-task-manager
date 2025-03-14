@@ -2,7 +2,7 @@ import { memo } from "react"
 import { Link } from "react-router-dom"
 function TaskRow({ data }) {
 
-    const { title, status, createdAt, id } = data
+    const { title, status, createdAtFormatted, id } = data
 
     // Funzione per lo sfondo dello status
     const statusBgColor = (status) => {
@@ -24,7 +24,7 @@ function TaskRow({ data }) {
                 <Link to={`/task/${id}`}>{title}</Link>
             </td>
             <td className={`py-2 px-4 ${statusBgColor(status)} rounded-md`}>{status}</td>
-            <td className="py-2 px-4">{createdAt}</td>
+            <td className="py-2 px-4">{createdAtFormatted}</td>
         </tr>
     )
 }

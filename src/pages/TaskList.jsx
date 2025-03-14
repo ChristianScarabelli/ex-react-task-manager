@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import GlobalContext from '../contexts/GlobalContext.jsx'
 import TaskRow from '../components/TaskRow.jsx'
 
@@ -11,6 +11,16 @@ const chevronDown = <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox=
     <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
 </svg>
 
+function debounce(callback, delay) {
+    let timer
+    return (value) => {
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+            callback(value)
+        }, delay)
+    }
+}
+
 export default function TaskList() {
 
     // Stato per le tasks
@@ -19,6 +29,8 @@ export default function TaskList() {
     const [sortBy, setSortBy] = useState('createdAt')
     // Stato per la direzione di ordinamento
     const [sortOrder, setSortOrder] = useState(1)
+    // Riferimento per la ricerca
+    const queryRef = useRef()
 
     useEffect(() => {
         fetchTasks()
@@ -34,30 +46,51 @@ export default function TaskList() {
         }
     }
 
-    // Funzione per la logica di ordinamento
+    // Funzione per la logica di ordinamento e filtraggio
     const tasksSort = useMemo(() => {
-        // Raggruppo le task in una variabile
-        const sortedTasks = [...tasks]
+
+        // Se non c'è la query, imposto stringa vuota
+        const searchQuery = queryRef.current ? queryRef.current.value.trim().toLowerCase() : ''
+
+        // Task filtrate secondo la query di riferimento
+        const filteredTasks = tasks.filter(task =>
+            task.title.toLowerCase().includes(searchQuery)
+        )
+
+        // Task filtrate da ordinare
+        const sortedTasks = [...filteredTasks]
 
         sortedTasks.sort((a, b) => {
-            if (sortBy === 'title') {      // Se il campo è 'title' ordino le tasks per titolo
+            if (sortBy === 'title') {       // Se la colonna di riferimento è 'title, ordine alfabetico secondo la direzione
                 return a.title.localeCompare(b.title) * sortOrder
-            } else if (sortBy === 'status') {       // Se il campo è 'status' ordino le tasks secondo l'ordine deciso
+            } else if (sortBy === 'status') {
                 const statusOrder = { 'To do': 1, 'Doing': 2, 'Done': 3 }
                 return (statusOrder[a.status] - statusOrder[b.status]) * sortOrder
-            } else if (sortBy === 'createdAt') {        // Se il campo è 'createdAt' ordino le tasks secondo la data
-                return new Date(a.createdAt) - new Date(b.createdAt) * sortOrder
+            } else if (sortBy === 'createdAt') {
+                return (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) * sortOrder
             }
-            else {
-                return 0  // Se il campo non è 'title', 'status' o 'createdAt' lascio le tasks invariate
-            }
+            return 0    // Se il campo/nome della colonna da ordinare non è nessuno, lascio l'ordine invariato
         })
-        return sortedTasks
+        return sortedTasks   // Ritorno le task ordinate
     }, [tasks, sortBy, sortOrder])
+
+    // Funzione per la ricerca con debounce
+    const handleSearch = useCallback(debounce(() => {
+        fetchTasks()
+    }, 300), [])
 
     return (
         <section className="container mx-auto p-4">
-            <h2 className="text-2xl font-bold mb-4 text-gray-300">Tasks List</h2>
+            <div className='flex justify-between items-center mb-5'>
+                <h2 className="text-2xl font-bold text-gray-300">Tasks List</h2>
+                <input
+                    type="text"
+                    className='text-gray-50 bg-gray-800 rounded-xl px-5 py-3'
+                    placeholder='Search tasks for title...'
+                    ref={queryRef}
+                    onChange={() => handleSearch(queryRef.current.value)}
+                />
+            </div>
             <div className="overflow-x-auto mt-10">
                 <table className="min-w-full bg-gray-200 shadow-md rounded-lg overflow-hidden text-gray-800 mb-10 ">
                     <thead className="bg-gray-800 text-gray-300 ">

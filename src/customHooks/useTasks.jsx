@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import dayjs from "dayjs"
 
 
 export default function useTasks() {
@@ -10,14 +11,19 @@ export default function useTasks() {
     // Funzione di fetch delle tasks
     const fetchTasks = async () => {
         try {
-            const tasks = await axios.get(`${import.meta.env.VITE_API_URL}/tasks`)
-            setTasks(tasks.data)
-            console.log(tasks.data)
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/tasks`)
+            const formattedTasks = response.data.map(task => ({
+                ...task,
+                createdAt: task.createdAt,  // Mantengo la data originale per l'ordinamento
+                createdAtFormatted: dayjs(task.createdAt).format('DD/MM/YYYY')  // Data formattata per la UI
+            }))
+            setTasks(formattedTasks)
         }
         catch (err) {
             console.error(err)
         }
     }
+
 
     // effect per il fecth delle tasks al primo render
     useEffect(() => {
