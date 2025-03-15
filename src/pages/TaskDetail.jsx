@@ -75,7 +75,7 @@ export default function TaskDetail() {
                 <h2><strong>Title:</strong>  {task.title}</h2>
                 <p><strong>Description:</strong>  {task.description}</p>
                 <span><strong>Status:</strong>  {task.status}</span>
-                <span><strong>Date of creation:</strong>  {task.createdAt}</span>
+                <span><strong>Date of creation:</strong>  {task.createdAtFormatted}</span>
                 <div className="flex items-center justify-between">
                     <button onClick={handleEditClick} className="bg-green-600 text-gray-100 hover:bg-green-700 cursor-pointer px-4 py-2 rounded-lg">Modify</button>
                     <button onClick={handleDeleteClick} className="bg-red-500 text-gray-100 hover:bg-red-600 cursor-pointer px-4 py-2 rounded-lg">Delete</button>

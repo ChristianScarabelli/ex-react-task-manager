@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import dayjs from "dayjs"
+const API_URL = import.meta.env.VITE_API_URL
 
 export default function useTasks() {
 
@@ -10,7 +11,7 @@ export default function useTasks() {
     // Funzione di fetch delle tasks
     const fetchTasks = async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/tasks`)
+            const response = await axios.get(`${API_URL}/tasks`)
             const formattedTasks = response.data.map(task => ({
                 ...task,
                 createdAt: task.createdAt,  // Mantengo la data originale per l'ordinamento
@@ -31,7 +32,7 @@ export default function useTasks() {
     // Funzione per aggiungere una task
     const addTask = async (task) => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/tasks`, task)
+            const response = await axios.post(`${API_URL}/tasks`, task)
             if (response.data.success) {
                 const newTask = {
                     ...response.data.task,
@@ -52,7 +53,7 @@ export default function useTasks() {
     // Funzione per rimuovere una task
     const removeTask = async (taskId) => {
         try {
-            const response = await axios.delete(`${import.meta.env.VITE_API_URL}/tasks/${taskId}`)
+            const response = await axios.delete(`${API_URL}/tasks/${taskId}`)
             if (response.data.success) {
                 setTasks(tasks.filter(task => task.id !== taskId))
             } else {
@@ -67,7 +68,7 @@ export default function useTasks() {
     // Funzione per modificare una task
     const updateTask = async (taskId, updatedTask) => {
         try {
-            const response = await axios.put(`${import.meta.env.VITE_API_URL}/tasks/${taskId}`, updatedTask)
+            const response = await axios.put(`${API_URL}/tasks/${taskId}`, updatedTask)
             if (response.data.success) {
                 const updatedTasks = tasks.map(task => task.id === taskId ? {
                     ...response.data.task,
@@ -85,7 +86,7 @@ export default function useTasks() {
     // Funzione per rimozione multipla delle task
     const removeMultipleTasks = async (taskIds) => {
         try {
-            const results = await Promise.allSettled(taskIds.map(taskId => axios.delete(`${import.meta.env.VITE_API_URL}/tasks/${taskId}`)))
+            const results = await Promise.allSettled(taskIds.map(taskId => axios.delete(`${API_URL}/tasks/${taskId}`)))
             const failedIds = results
                 .filter(result => result.status === 'rejected')
                 .map((_, index) => taskIds[index])

@@ -15,11 +15,12 @@ export default function AddTask() {
     const taskStatusRef = useRef()
 
     // Funzione di validazione per Title
-    const isTitleValid = useMemo(() => {
-        const titleTrimmed = taskTitle.trim()
-        const hasSpecialChars = titleTrimmed.split('').some((char) => symbols.includes(char))
-
-        return !hasSpecialChars && titleTrimmed !== ''
+    const taskTitleError = useMemo(() => {
+        if (!taskTitle.trim())
+            return 'Task title cannot be empty'
+        if (taskTitle.trim().split('').some((char) => symbols.includes(char)))
+            return 'Task title cannot contain symbols'
+        return '' // altrimenti ritorno stringa vuota
     }, [taskTitle])
 
 
@@ -28,7 +29,7 @@ export default function AddTask() {
         e.preventDefault()
 
         // Se il titolo non è valido blocco il submit
-        if (!isTitleValid) return
+        if (taskTitleError) return
 
         setIsFormValid(true)
 
@@ -72,8 +73,8 @@ export default function AddTask() {
                     className="bg-gray-300 text-gray-800 border-gray-300 rounded-lg p-3 mb-3 focus:outline-none focus:ring-3 focus:ring-yellow-500"
                 />
                 {/* Si mostra il messaggio se ci sono spazi vuoti o caratteri speciali */}
-                {taskTitle && !isTitleValid && (
-                    <span className="text-red-500">Title is required and cannot contain special characters</span>
+                {taskTitle && taskTitleError && (
+                    <span className="text-red-500">{taskTitleError}</span>
                 )}
                 <label htmlFor="task-description">Insert Task Description</label>
                 <textarea

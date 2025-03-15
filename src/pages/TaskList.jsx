@@ -155,7 +155,10 @@ export default function TaskList() {
                 </table>
                 {selectedTaskIds.length > 0 &&
                     <div>
-                        <button onClick={handleMultipleTasksDelete} className="bg-red-500 text-gray-100 hover:bg-red-600 cursor-pointer px-4 py-2 rounded-lg">Delete all</button>
+                        <button onClick={handleMultipleTasksDelete} className="bg-red-500 text-gray-100 hover:bg-red-600 cursor-pointer px-4 py-2 rounded-lg">
+                            {selectedTaskIds.length === 1 && 'Delete'}
+                            {selectedTaskIds.length > 1 && 'Delete all'}
+                        </button>
                     </div>
                 }
             </div>
