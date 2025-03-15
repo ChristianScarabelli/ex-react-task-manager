@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import GlobalContext from '../contexts/GlobalContext.jsx'
 import TaskRow from '../components/TaskRow.jsx'
 
@@ -28,8 +28,8 @@ export default function TaskList() {
     const [sortBy, setSortBy] = useState('createdAt')
     // Stato per la direzione di ordinamento
     const [sortOrder, setSortOrder] = useState(1)
-    // Riferimento per la ricerca
-    const queryRef = useRef()
+    // Stato per la ricerca
+    const [searchQuery, setSearchQuery] = useState('')
     // Stato per memorizzare le task selezionate
     const [selectedTaskIds, setSelectedTaskIds] = useState([])
 
@@ -51,12 +51,9 @@ export default function TaskList() {
     const tasksSort = useMemo(() => {
         if (!tasks) return []
 
-        // Se non c'è la query, imposto stringa vuota
-        const searchQuery = queryRef.current ? queryRef.current.value.trim().toLowerCase() : ''
-
         // Task filtrate secondo la query di riferimento
         const filteredTasks = tasks.filter(task =>
-            task.title.toLowerCase().includes(searchQuery)
+            task.title.toLowerCase().includes(searchQuery.toLowerCase())
         )
 
         // Task filtrate da ordinare
@@ -74,12 +71,12 @@ export default function TaskList() {
             return 0    // Se il campo/nome della colonna da ordinare non è nessuno, lascio l'ordine invariato
         })
         return sortedTasks   // Ritorno le task ordinate
-    }, [tasks, sortBy, sortOrder])
+    }, [tasks, sortBy, sortOrder, searchQuery])
 
     // Funzione per la ricerca con debounce
-    const handleSearch = useCallback(debounce(() => {
-        fetchTasks()
-    }, 300), [])
+    const handleDebouncedSearch = useCallback(
+        debounce(setSearchQuery, 500)
+        , [])
 
     // Funzione per la selezione di task
     const toggleSelection = (taskId) => {
@@ -113,8 +110,7 @@ export default function TaskList() {
                     type="text"
                     className='text-gray-50 bg-gray-800 rounded-xl px-5 py-3'
                     placeholder='Search tasks for title...'
-                    ref={queryRef}
-                    onChange={() => handleSearch(queryRef.current.value)}
+                    onChange={(e) => handleDebouncedSearch(e.target.value)}
                 />
             </div>
             <div className="overflow-x-auto mt-10">

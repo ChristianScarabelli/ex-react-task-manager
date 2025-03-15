@@ -42,9 +42,9 @@ export default function EditTaskModal({ show, onClose, task, onSave }) {
                 onChange={(e) => setStatus(e.target.value)}
                 className="p-2 rounded bg-gray-500 text-gray-300 mb-4"
             >
-                <option value="To do">To do</option>
-                <option value="Doing">Doing</option>
-                <option value="Done">Done</option>
+                {['To do', 'Doing', 'Done'].map((i, value) => {
+                    <option key={i} value={value}>{value}</option>
+                })}
             </select>
         </form>
     )
@@ -57,8 +57,8 @@ export default function EditTaskModal({ show, onClose, task, onSave }) {
             content={content}
             show={show}
             onClose={onClose}
-            onConfirm={() => editFormRef.current.requestSubmit()}
-            confirmText="Salva"
+            onConfirm={() => editFormRef.current.requestSubmit()}   // per non fare un'altro bottone di conferma (per il submit), sfrutto il metodo requestSubmit del tag form per simulare/scatenare un submit
+            confirmText="Save"
             confirmButtonClasses="bg-blue-500 hover:bg-blue-600"
         />
     )
