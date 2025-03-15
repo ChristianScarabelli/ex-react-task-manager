@@ -100,7 +100,13 @@ export default function AddTask() {
                     {isFormValid &&
                         <span className="text-lg text-gray-300">Task added!</span>
                     }
-                    <button className="text-gray-300 ms-auto cursor-pointer p-3 rounded-lg bg-blue-400 hover:bg-yellow-500" type="submit">Add task</button>
+                    <button
+                        disabled={taskTitleError}
+                        className="text-gray-300 ms-auto cursor-pointer p-3 rounded-lg bg-blue-400 hover:bg-yellow-500"
+                        type="submit"
+                    >
+                        Add task
+                    </button>
 
                 </div>
             </form>

@@ -21,16 +21,6 @@ export default function TaskDetail() {
     // Recupero la task dal context con id corrispondente al path
     const task = tasks.find((task) => task.id === parsedId)
 
-    // Funzione per gestire il bottone di eliminazione che apre la modale
-    const handleDeleteClick = () => {
-        setShowDeleteModal(true)
-    }
-
-    // Funzione per gestire il bottone di chiusura della modale di eliminazione
-    const handleCloseDeleteModal = () => {
-        setShowDeleteModal(false)
-    }
-
     // Funzione per gestire il bottone di eliminazione nella modale di eliminazione
     const handleConfirmDelete = async () => {
         try {
@@ -42,16 +32,6 @@ export default function TaskDetail() {
         catch (err) {
             alert(`Failed to delete task: ${err.message}`)
         }
-    }
-
-    // Funzione per gestire il bottone di modifica che apre la modale
-    const handleEditClick = () => {
-        setShowEditModal(true)
-    }
-
-    // Funzione per gestire il bottone di chiusura della modale di modifica
-    const handleCloseEditModal = () => {
-        setShowEditModal(false)
     }
 
     // Funzione per gestire il bottone di salvataggio nella modale di modifica
@@ -77,21 +57,21 @@ export default function TaskDetail() {
                 <span><strong>Status:</strong>  {task.status}</span>
                 <span><strong>Date of creation:</strong>  {task.createdAtFormatted}</span>
                 <div className="flex items-center justify-between">
-                    <button onClick={handleEditClick} className="bg-green-600 text-gray-100 hover:bg-green-700 cursor-pointer px-4 py-2 rounded-lg">Modify</button>
-                    <button onClick={handleDeleteClick} className="bg-red-500 text-gray-100 hover:bg-red-600 cursor-pointer px-4 py-2 rounded-lg">Delete</button>
+                    <button onClick={() => setShowEditModal(true)} className="bg-green-600 text-gray-100 hover:bg-green-700 cursor-pointer px-4 py-2 rounded-lg">Modify</button>
+                    <button onClick={() => setShowDeleteModal(true)} className="bg-red-500 text-gray-100 hover:bg-red-600 cursor-pointer px-4 py-2 rounded-lg">Delete</button>
                 </div>
             </div>
             <Modal
                 title={`Deleting task "${task.title}"`}
                 content='Are you sure to delete this task?'
                 show={showDeleteModal}
-                onClose={handleCloseDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
                 onConfirm={handleConfirmDelete}
                 confirmText='Delete'
             />
             <EditTaskModal
                 show={showEditModal}
-                onClose={handleCloseEditModal}
+                onClose={() => setShowEditModal(false)}
                 task={task}
                 onSave={handleSaveEdit}
             />

@@ -1,19 +1,9 @@
 import { createPortal } from "react-dom"
 
 export default function Modal({
-    title, content, show = false, onClose, onConfirm, confirmText = 'Confirm', confirmButtonClasses = 'bg-red-500 hover:bg-red-600' }) {
+    title, content, show, onClose, onConfirm, confirmText = 'Confirm', confirmButtonClasses = 'bg-red-500 hover:bg-red-600' }) {
 
-    // Funzione per chiudere la modale con la futura funzione passata come prop
-    const handleOnClose = () => {
-        onClose()
-    }
-
-    // Funzione per confermare la modale con la futura funzione passata come prop
-    const handleOnConfirm = () => {
-        onConfirm()
-        handleOnClose()
-    }
-
+    if (!show) return null
 
     return show && createPortal(
         <div className="fixed inset-0 flex justify-center items-center z-50">
@@ -22,8 +12,8 @@ export default function Modal({
                 <h2 className="text-2xl font-bold text-gray-300">{title}</h2>
                 <div className='text-center text-gray-300'>{content}</div>
                 <div className="flex justify-between items-center">
-                    <button onClick={handleOnClose} className="cursor-pointer text-gray-800 text-sm px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400">Cancel</button>
-                    <button onClick={handleOnConfirm} className={`cursor-pointer ml-4 text-sm px-4 py-2 rounded-lg text-gray-300 ${confirmButtonClasses}`} >{confirmText}</button>
+                    <button onClick={onClose} className="cursor-pointer text-gray-800 text-sm px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400">Cancel</button>
+                    <button onClick={onConfirm} className={`cursor-pointer ml-4 text-sm px-4 py-2 rounded-lg text-gray-300 ${confirmButtonClasses}`} >{confirmText}</button>
                 </div>
             </div>
         </div>,
