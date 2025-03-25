@@ -1,6 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import GlobalContext from '../contexts/GlobalContext.jsx'
 import TaskRow from '../components/TaskRow.jsx'
+import Modal from '../components/Modal.jsx'
 
 // Freccine ordinamento
 const chevronUp = <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
@@ -32,6 +33,7 @@ export default function TaskList() {
     const [searchQuery, setSearchQuery] = useState('')
     // Stato per memorizzare le task selezionate
     const [selectedTaskIds, setSelectedTaskIds] = useState([])
+    const [modalShow, setModalShow] = useState(false)
 
     useEffect(() => {
         fetchTasks()
@@ -120,19 +122,19 @@ export default function TaskList() {
                             <th onClick={() => handleSort('title')} className="py-2 px-4 text-left cursor-pointer hover:bg-gray-700">
                                 <div className="flex justify-between items-center">
                                     Title
-                                    {sortOrder === 1 && sortBy === 'title' ? chevronDown : chevronUp}
+                                    {sortBy === 'title' && (sortOrder === 1 ? chevronDown : chevronUp)}
                                 </div>
                             </th>
                             <th onClick={() => handleSort('status')} className="py-2 px-4 text-left cursor-pointer hover:bg-gray-700">
                                 <div className="flex justify-between items-center">
                                     Status
-                                    {sortOrder === 1 && sortBy === 'status' ? chevronDown : chevronUp}
+                                    {sortBy === 'status' && (sortOrder === 1 ? chevronDown : chevronUp)}
                                 </div>
                             </th>
                             <th onClick={() => handleSort('createdAt')} className="py-2 px-4 text-left cursor-pointer hover:bg-gray-700">
                                 <div className="flex justify-between items-center">
                                     Date of creation
-                                    {sortOrder === 1 && sortBy === 'createdAt' ? chevronDown : chevronUp}
+                                    {sortBy === 'createdAt' && (sortOrder === 1 ? chevronDown : chevronUp)}
                                 </div>
                             </th>
                         </tr>
@@ -151,10 +153,18 @@ export default function TaskList() {
                 </table>
                 {selectedTaskIds.length > 0 &&
                     <div>
-                        <button onClick={handleMultipleTasksDelete} className="bg-red-500 text-gray-100 hover:bg-red-600 cursor-pointer px-4 py-2 rounded-lg">
+                        <button onClick={() => setModalShow(true)} className="bg-red-500 text-gray-100 hover:bg-red-600 cursor-pointer px-4 py-2 rounded-lg">
                             {selectedTaskIds.length === 1 && 'Delete'}
                             {selectedTaskIds.length > 1 && 'Delete all'}
                         </button>
+                        <Modal
+                            title="Delete Tasks"
+                            show={modalShow}
+                            onClose={() => setModalShow(false)}
+                            onConfirm={handleMultipleTasksDelete}   // per non fare un'altro bottone di conferma (per il submit), sfrutto il metodo requestSubmit del tag form per simulare/scatenare un submit
+                            confirmText="Are You sure to delete these tasks?"
+                            confirmButtonClasses="bg-blue-500 hover:bg-blue-600"
+                        />
                     </div>
                 }
             </div>

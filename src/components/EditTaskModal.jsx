@@ -42,9 +42,9 @@ export default function EditTaskModal({ show, onClose, task, onSave }) {
                 onChange={(e) => setStatus(e.target.value)}
                 className="p-2 rounded bg-gray-500 text-gray-300 mb-4"
             >
-                {['To do', 'Doing', 'Done'].map((i, value) => {
+                {['To do', 'Doing', 'Done'].map((value, i) => (
                     <option key={i} value={value}>{value}</option>
-                })}
+                ))}
             </select>
         </form>
     )
